@@ -1,6 +1,6 @@
 // SPDX-FileCopyrightText: Copyright 2024 shadPS4 Emulator Project
 // SPDX-License-Identifier: GPL-2.0-or-later
-#pragma clang optimize off
+
 #include <algorithm>
 #include "common/alignment.h"
 #include "common/scope_exit.h"
@@ -218,6 +218,11 @@ u32 BufferCache::BindIndexBuffer(bool& is_indexed, u32 index_offset) {
     const vk::IndexType index_type = is_index16 ? vk::IndexType::eUint16 : vk::IndexType::eUint32;
     const u32 index_size = is_index16 ? sizeof(u16) : sizeof(u32);
     VAddr index_address = regs.index_base_address.Address<VAddr>();
+    if (index_address == 0x54A96F40) {
+        ((u16*)index_address)[0] = 0;
+        ((u16*)index_address)[1] = 2;
+        ((u16*)index_address)[2] = 1;
+    }
     index_address += index_offset * index_size;
 
     // Bind index buffer.
